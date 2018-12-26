@@ -2,6 +2,12 @@ import React from 'react';
 import { AppLoading, Asset, Font } from "expo"
 import {Ionicons,MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from 'react-native';
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/es/integration/react";
+//PersistGate란 앱로딩이 앱이 전체 로딩되기 전까지는 앱을 보여주지 않는 것처럼, 디스크에서 리덕스 스토어를 불러오기전까지는 앱을 보여주지 않는다.
+import configureStore from "./redux/configureStore";
+import AppContainer from "./components/AppContainer";
+const { persistor, store } = configureStore(); //함수로 선언했으므로...
 
 class App extends React.Component {
   state ={
@@ -16,11 +22,14 @@ class App extends React.Component {
         onFinish={this._handleFinishLoading}
         />
       );
-    }
+    }//state를 다 들고오면 PersistGate가 열려 이하의 뷰들을 실행할 수 있다. 디스크에서 스토어를 가져오는 것과 연결되었다.
     return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <AppContainer />
+        </PersistGate>
+      </Provider>
+      
     );
   }
   _loadAssetsAsync = async() =>{ // 이하 적혀있는 로딩해야할 Asset, Font을 Promise해놓는다.
